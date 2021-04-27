@@ -8,8 +8,9 @@ import os
 
 dotenv.load_dotenv()
           
-logging = False
-debug = True
+logging = False # human readable send and recieve 
+log_everything = False # direct modem ouput
+debug = True # run 5x faster for testing
 
 class WaterAlarm:
     def __init__(self,
@@ -25,7 +26,7 @@ class WaterAlarm:
                  green_relay: int = 3,
                  disconnect_time: int = 10,
                  water_time: int = 10,
-                 log_everything: bool = True):
+                 log: bool = True):
         """Communicates with another device via SMS. If it returns a certain
          value after a certain request, turns a certain relay on. Can also
          send messages to people to inform them of the situation. In this
@@ -43,7 +44,7 @@ class WaterAlarm:
         alert_phone_numbers: The phone numbers to alert when signal is lost or water is detected.
         disconnect_time: The time in minutes to wait before signalling a disconnect. Must be a multiple of 2. Defaults to 10.
         water_time: The time in minutes that water must be detected for before signalling water. Must be a muliple of 2. Defaults to 10.
-        log_everything: Logs the sending and receiving of messages to the console. Errors, disconnects and water detections are always logged. Defaults to True.
+        log: Logs the sending and receiving of messages to the console. Errors, disconnects and water detections are always logged. Defaults to True.
 
         Call the mainloop method to start the communication.
         """
@@ -113,11 +114,12 @@ class WaterAlarm:
     def parse_message(self, message):
         """Turns relays on and off depending on the message contents. 'message' should be a gsmmodem SMS object."""
         if message.number == self.phone_number:
-            if self.missing_responses >= self.disconnect_time / 2:
-                self.alert_humans("restored")
-            self.missing_loops = 0
-            self.missing_responses = 0
-            self.awaiting_message = False
+            if message.text == sef.water_message or message.text == self.no_water_message:
+                if self.missing_responses >= self.disconnect_time / 2:
+                    selfi.alert_humans("restored")
+                self.missing_loops = 0
+                self.missing_responses = 0
+                self.awaiting_message = False
             if message.text == self.water_message:
                 self.times_water_detected += 1
                 self.update_status()
@@ -218,7 +220,7 @@ class WaterAlarm:
         finally:
             self.relay_board.all_off()
             self.modem.close()
-if logging:
+if log_everything:
     log.basicConfig(format='%(levelname)s: %(message)s', level=logging.DEBUG)
 
 phone_number = os.environ["phone_number"]
@@ -234,7 +236,7 @@ wateralarm = WaterAlarm(
     red_relay=1,
     amber_relay=2,
     green_relay=3,
-    log_everything=True,
+    log=logging,
     alert_phone_numbers=alert_phone_numbers,
     disconnect_time=10,
     water_time=4 
