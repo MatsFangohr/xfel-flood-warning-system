@@ -114,9 +114,9 @@ class WaterAlarm:
     def parse_message(self, message):
         """Turns relays on and off depending on the message contents. 'message' should be a gsmmodem SMS object."""
         if message.number == self.phone_number:
-            if message.text == sef.water_message or message.text == self.no_water_message:
+            if message.text == self.water_message or message.text == self.no_water_message:
                 if self.missing_responses >= self.disconnect_time / 2:
-                    selfi.alert_humans("restored")
+                    self.alert_humans("restored")
                 self.missing_loops = 0
                 self.missing_responses = 0
                 self.awaiting_message = False
