@@ -10,7 +10,7 @@ dotenv.load_dotenv()
           
 logging = False # human readable send and recieve 
 log_everything = False # direct modem ouput
-debug = True # run 5x faster for testing
+debug = False # run 5x faster for testing
 
 class WaterAlarm:
     def __init__(self,
