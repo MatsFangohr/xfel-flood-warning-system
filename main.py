@@ -236,7 +236,7 @@ wateralarm = WaterAlarm(
     green_relay=3,
     log_everything=True,
     alert_phone_numbers=alert_phone_numbers,
-    disconnect_time=6,
+    disconnect_time=10,
     water_time=4 
     )
 
